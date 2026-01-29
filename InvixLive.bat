@@ -12,7 +12,7 @@ if %errorlevel% neq 0 (
     echo ================================================
     echo        ADMINISTRATOR PRIVILEGES REQUIRED
     echo ================================================
-    echo Right-click this file and choose:
+    echo Please right-click this file and choose:
     echo "Run as administrator"
     pause
     exit /b
@@ -46,28 +46,35 @@ echo [15] Restore Point    [16] Defender OFF    [17] Defender ON
 echo ----------------------------------------------------------------------------
 echo [R] Restart PC       [X] Exit
 echo ============================================================================
-choice /c 123456789ABCDEFGHRX /n /m "Select: "
+echo.
 
-:: ================= INPUT MAPPING =================
-if errorlevel 19 exit /b
-if errorlevel 18 shutdown /r /t 0
-if errorlevel 17 goto DEFENDER_ON
-if errorlevel 16 goto DEFENDER_OFF
-if errorlevel 15 goto RESTORE_POINT
-if errorlevel 14 goto ULTIMATE
-if errorlevel 13 goto GPU
-if errorlevel 12 goto CPU
-if errorlevel 11 goto SEARCH
-if errorlevel 10 goto PRIORITY
-if errorlevel 9 goto MOUSE
-if errorlevel 8 goto POWER
-if errorlevel 7 goto STARTUP
-if errorlevel 6 goto RAM
-if errorlevel 5 goto DEBLOAT
-if errorlevel 4 goto GAME
-if errorlevel 3 goto SERVICES
-if errorlevel 2 goto NETWORK
-if errorlevel 1 goto FPS
+set "choice="
+set /p choice="Enter your choice and press ENTER: "
+
+if /i "%choice%"=="X" exit /b
+if /i "%choice%"=="R" shutdown /r /t 0
+
+if "%choice%"=="1"  goto FPS
+if "%choice%"=="2"  goto NETWORK
+if "%choice%"=="3"  goto SERVICES
+if "%choice%"=="4"  goto GAME
+if "%choice%"=="5"  goto DEBLOAT
+if "%choice%"=="6"  goto RAM
+if "%choice%"=="7"  goto STARTUP
+if "%choice%"=="8"  goto POWER
+if "%choice%"=="9"  goto MOUSE
+if "%choice%"=="10" goto PRIORITY
+if "%choice%"=="11" goto SEARCH
+if "%choice%"=="12" goto CPU
+if "%choice%"=="13" goto GPU
+if "%choice%"=="14" goto ULTIMATE
+if "%choice%"=="15" goto RESTORE_POINT
+if "%choice%"=="16" goto DEFENDER_OFF
+if "%choice%"=="17" goto DEFENDER_ON
+
+echo.
+echo ❌ Invalid choice. Please enter a valid option.
+timeout /t 2 >nul
 goto MENU
 
 :: ================= FUNCTIONS =================
@@ -165,10 +172,12 @@ goto MENU
 :ULTIMATE
 cls
 echo Applying ALL optimizations...
-call :FPS
-call :CPU
-call :GPU
-call :NETWORK
+
+bcdedit /set disabledynamictick yes >nul 2>&1
+powercfg -setactive SCHEME_MIN >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v HwSchMode /t REG_DWORD /d 2 /f >nul 2>&1
+netsh int tcp set global autotuninglevel=normal >nul 2>&1
+
 set MODE=ULTIMATE
 timeout /t 2 >nul
 goto MENU
